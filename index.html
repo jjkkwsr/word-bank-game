@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LexiScramble - Fun Vocab Learning</title>
+    <title>Story Quest - Movers Word Bank Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
@@ -16,235 +16,127 @@
         <div class="blob blob-3"></div>
     </div>
 
-    <!-- Mistake Sidebar Drawer -->
-    <div class="mistake-sidebar" id="mistake-drawer">
-        <div class="drawer-header">
-            <h2>Mistake Bank</h2>
-            <button id="close-drawer" class="close-btn">&times;</button>
-        </div>
-        <div class="drawer-body">
-            <p class="drawer-hint">Review and master the words you missed.</p>
-            <ul class="mistake-list" id="mistake-list-items">
-                <!-- Dynamic items -->
-            </ul>
-        </div>
-        <div class="drawer-footer">
-            <button id="clear-mistakes" class="btn-outline">Clear All</button>
-            <button id="practice-mistakes-btn" class="btn-primary" style="margin: 0; padding: 10px 20px;" disabled>Practice Now</button>
-        </div>
-    </div>
-
-    <!-- Progress Sidebar Drawer -->
-    <div class="mistake-sidebar" id="progress-drawer">
-        <div class="drawer-header">
-            <h2 id="progress-drawer-title">Practiced Progress</h2>
-            <button id="close-progress-drawer" class="close-btn">&times;</button>
-        </div>
-        <div class="drawer-body">
-            <p class="drawer-hint">Review the vocabulary words you have historically completed in this list.</p>
-            <ul class="mistake-list" id="progress-list-items">
-                <!-- Dynamic items -->
-            </ul>
-        </div>
-        <div class="drawer-footer">
-            <button id="clear-progress" class="btn-outline" style="width:100%;">Reset All Progress</button>
+    <!-- Theme Selection FAB -->
+    <div class="theme-fab-container">
+        <button id="theme-menu-btn" class="theme-fab" title="Switch Theme">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+        </button>
+        <div class="theme-dropdown hidden" id="theme-dropdown-menu">
+            <button class="theme-dropdown-item active" data-theme="default">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #6366f1, #ec4899);"></span>
+                Aurora
+            </button>
+            <button class="theme-dropdown-item" data-theme="jungle">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #10b981, #06b6d4);"></span>
+                Jungle
+            </button>
+            <button class="theme-dropdown-item" data-theme="sunset">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #f97316, #e11d48);"></span>
+                Sunset
+            </button>
+            <button class="theme-dropdown-item" data-theme="sakura">
+                <span class="theme-dot" style="background: linear-gradient(135deg, #f472b6, #fda4af);"></span>
+                Sakura
+            </button>
         </div>
     </div>
-
-    <!-- Floating Toggles -->
-    <button id="progress-toggle-btn" class="mistake-fab progress-fab" title="View Practiced Progress">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-    </button>
-
-    <button id="mistake-toggle-btn" class="mistake-fab" title="View Mistake Bank">
-        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-        <span id="mistake-badge" class="badge">0</span>
-    </button>
 
     <main class="glass-container" id="app-container">
-        <!-- View: Upload & Config -->
-        <section id="view-upload" class="view active">
-            <h1 class="brand-title">LexiScramble</h1>
-            <div class="subtitle" id="upload-subtitle">Upload your vocabulary CSV to begin the challenge.</div>
+        <!-- Section 1: Lesson Selection Menu -->
+        <section id="view-menu" class="view active">
+            <h1 class="brand-title">Story Quest</h1>
+            <div class="subtitle">Movers English Word Bank Adventure</div>
             
-            <!-- Stage 1: File drag & drop upload -->
-            <div id="upload-zone-container">
-                <div class="upload-zone" id="drop-zone">
-                    <div class="upload-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                    </div>
-                    <h3>Drag & Drop your CSV</h3>
-                    <p>or click to browse</p>
-                    <input type="file" id="csv-input" accept=".csv" hidden>
-                </div>
-                <div class="format-hint" style="margin-bottom: 20px;">
-                    Format: "Word", "Type", "Definition", "Example Sentence"
-                </div>
-                <button id="load-demo-btn" class="btn-outline" style="margin: 0 auto; width: 100%; max-width: 320px; display: block; border-color: rgba(255, 255, 255, 0.15); padding: 12px 0;">Try Demo Vocab List</button>
-
-
-                <!-- Theme Switching on Homepage -->
-                <div class="theme-container" style="margin-top: 30px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 20px; text-align: left; max-width: 480px; margin-left: auto; margin-right: auto;">
-                    <label style="display:block; font-size:0.95rem; font-weight:600; margin-bottom:12px; color:var(--text-main); text-align: center;">App Theme:</label>
-                    <div class="theme-options" style="display:flex; gap:10px; flex-wrap:nowrap; justify-content: center;">
-                        <button class="theme-btn active" data-theme="default" title="Aurora (Default)">
-                            <span class="theme-dot" style="background: linear-gradient(135deg, #6366f1, #ec4899);"></span>
-                            Aurora
-                        </button>
-                        <button class="theme-btn" data-theme="jungle" title="Jungle Breeze">
-                            <span class="theme-dot" style="background: linear-gradient(135deg, #10b981, #06b6d4);"></span>
-                            Jungle
-                        </button>
-                        <button class="theme-btn" data-theme="sunset" title="Sunset Amber">
-                            <span class="theme-dot" style="background: linear-gradient(135deg, #f97316, #e11d48);"></span>
-                            Sunset
-                        </button>
-                        <button class="theme-btn" data-theme="sakura" title="Sakura Dream">
-                            <span class="theme-dot" style="background: linear-gradient(135deg, #f472b6, #fda4af);"></span>
-                            Sakura
-                        </button>
-                    </div>
-                </div>
+            <div class="lessons-grid">
+                <button class="lesson-card-btn" data-lesson="1_a_favourite_toy_shop.csv">
+                    <span class="lesson-num">Lesson 1</span>
+                    <span class="lesson-name">A Favourite Toy Shop</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="2_the_party.csv">
+                    <span class="lesson-num">Lesson 2</span>
+                    <span class="lesson-name">The Party</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="3_at_the_doctors.csv">
+                    <span class="lesson-num">Lesson 3</span>
+                    <span class="lesson-name">At the Doctor's</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="4_uncle_charlies_hotel.csv">
+                    <span class="lesson-num">Lesson 4</span>
+                    <span class="lesson-name">Uncle Charlie's Hotel</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="5_from_the_countryside_to_the_jungle.csv">
+                    <span class="lesson-num">Lesson 5</span>
+                    <span class="lesson-name">Countryside to Jungle</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="6_the_weather.csv">
+                    <span class="lesson-num">Lesson 6</span>
+                    <span class="lesson-name">The Weather</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="7_our_town.csv">
+                    <span class="lesson-num">Lesson 7</span>
+                    <span class="lesson-name">Our Town</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="8_dreaming_of_holidays.csv">
+                    <span class="lesson-num">Lesson 8</span>
+                    <span class="lesson-name">Dreaming of Holidays</span>
+                </button>
+                <button class="lesson-card-btn" data-lesson="9_some_games.csv">
+                    <span class="lesson-num">Lesson 9</span>
+                    <span class="lesson-name">Some Games</span>
+                </button>
             </div>
-
-            <!-- Stage 2: Range Selection Config (hidden initially) -->
-            <div id="practice-config" class="hidden">
-                <div class="config-card">
-                    <div class="config-file-info" style="display:flex; align-items:flex-start; gap:16px; text-align:left;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent-primary); flex-shrink:0; margin-top:4px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
-                        <div style="flex-grow:1;">
-                            <h4 id="config-file-name" style="font-weight:600; color:var(--text-main); word-break:break-all; margin-bottom: 2px;">vocab.csv</h4>
-                            <p id="config-max-words" style="font-size:0.85rem; color:var(--text-muted); margin-bottom:8px;">0 vocabulary words found</p>
-                            
-                            <!-- Practice Progress Indicator -->
-                            <div id="config-progress-container" class="hidden" style="margin-top:8px;">
-                                <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); margin-bottom:4px;">
-                                    <span id="config-progress-text">Practiced: 0 / 0 words</span>
-                                    <span id="config-progress-percent">0%</span>
-                                </div>
-                                <div style="width:100%; height:4px; background:rgba(255,255,255,0.06); border-radius:2px; overflow:hidden;">
-                                    <div id="config-progress-bar" style="width:0%; height:100%; background:var(--accent-primary); border-radius:2px; transition:width 0.4s ease;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="slider-container" style="margin-top: 24px; text-align: left;">
-                        <label for="vocab-count-slider" style="display:block; font-size:0.95rem; font-weight:600; margin-bottom:12px; color:var(--text-main);">Number of words to practice:</label>
-                        <div style="display:flex; align-items:center; gap:15px;">
-                            <input type="range" id="vocab-count-slider" min="1" max="100" value="5" style="flex-grow:1; accent-color:var(--accent-primary); cursor:pointer;">
-                            <input type="number" id="vocab-count-number" min="1" max="100" value="5" style="width:70px; padding:8px 12px; background:rgba(255,255,255,0.05); border:1px solid var(--glass-border); border-radius:8px; color:var(--text-main); text-align:center; font-family:inherit; font-weight:600;">
-                        </div>
-                    </div>
-                    
-                    <div class="mode-selection-container" style="margin-top: 24px; text-align: left; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 20px;">
-                        <label style="display:block; font-size:0.95rem; font-weight:600; margin-bottom:12px; color:var(--text-main);">Practice Mode:</label>
-                        <div class="mode-options" style="display:flex; gap:10px;">
-                            <button class="mode-btn active" id="mode-worksheet-btn" type="button" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-                                Spelling Mode
-                            </button>
-                            <button class="mode-btn" id="mode-wordbank-btn" type="button" style="flex: 1; padding: 10px; border-radius: 8px; border: 1px solid var(--glass-border); background: rgba(255,255,255,0.05); color: var(--text-main); font-weight: 600; cursor: pointer; transition: all 0.3s ease;">
-                                Word Bank Mode
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="advanced-mode-container" class="slider-container" style="margin-top: 24px; text-align: left; display: flex; align-items: center; justify-content: space-between; gap: 15px; border-top: 1px dashed rgba(255,255,255,0.06); padding-top: 20px;">
-                        <span style="font-size:0.95rem; font-weight:600; color:var(--text-main);">Advanced Mode <span style="font-size: 0.78rem; font-weight:400; color:var(--text-muted); display:block; margin-top:2px;">No letter bank hints. Use physical keyboard or A-Z keys.</span></span>
-                        <label class="switch">
-                            <input type="checkbox" id="advanced-mode-toggle">
-                            <span class="slider-toggle"></span>
-                        </label>
-                    </div>
-
-                </div>
-                
-                <div style="margin-top: 30px; display:flex; gap:15px;">
-                    <button id="start-challenge-btn" class="btn-primary" style="margin-top:0; flex-grow:2;">Start Challenge</button>
-                    <button id="change-file-btn" class="btn-outline" style="margin-top:0; flex-grow:1;">Change File</button>
-                </div>
-            </div>
-        </section>
-
-        <!-- View: Game (Worksheet Stages) -->
-        <section id="view-game" class="view">
-            <div class="game-header">
-                <div class="stats" style="margin-bottom:15px;">
-                    <button class="btn-icon-text" id="reset-btn" title="Return to Menu">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-                        Exit
+            
+            <div class="custom-upload-section">
+                <div class="divider"><span>OR</span></div>
+                <div class="upload-row">
+                    <button id="upload-trigger-btn" class="btn-outline">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Upload Custom CSV
                     </button>
-                    <span id="game-status-badge" style="background:rgba(99, 102, 241, 0.15); color:var(--accent-primary); padding:4px 12px; border-radius:12px; font-size:0.85rem; font-weight:700; border:1px solid rgba(99,102,241,0.3);">Worksheet Mode</span>
+                    <input type="file" id="csv-file-input" accept=".csv" hidden>
                 </div>
             </div>
-
-            <!-- Stage 1: Review Sheet -->
-            <div id="stage-review" class="stage-container">
-                <h3 style="font-size:1.4rem; font-weight:700; margin-bottom:8px; text-align:left; color:var(--text-main);">Vocabulary Review</h3>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:25px; text-align:left;">Study the vocabulary example sentences below and listen to pronunciations before starting the practice sheet.</p>
-                
-                <div id="review-list" class="worksheet-list" style="max-height: 420px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px; text-align: left;">
-                    <!-- Dynamic Review Cards -->
-                </div>
-                
-                <button id="start-practice-btn" class="btn-primary" style="margin-top: 0; width:100%; padding:16px 0; font-size:1.15rem;">Start Practice Sheet</button>
-            </div>
-
-            <!-- Stage 2: Practice Sheet (Worksheet) -->
-            <div id="stage-practice" class="stage-container hidden">
-                <h3 style="font-size:1.4rem; font-weight:700; margin-bottom:8px; text-align:left; color:var(--text-main);">Worksheet Practice</h3>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:25px; text-align:left;">Fill in the carved-out space in each sentence. Click on any sentence's slots to activate it, then select its letters or type directly.</p>
-                
-                <!-- Sequential Virtual Keyboard for Advanced Mode -->
-                <div id="virtual-keyboard" class="virtual-keyboard hidden"></div>
-                
-                <div id="practice-list" class="worksheet-list" style="max-height: 420px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px; text-align: left;">
-                    <!-- Dynamic Practice Worksheet Cards -->
-                </div>
-                
-                <button id="submit-practice-btn" class="btn-primary" style="margin-top: 0; width:100%; padding:16px 0; font-size:1.15rem;">Submit Practice Sheet</button>
-            </div>
-
-            <!-- Stage 3: Word Bank Quiz Mode (Word Bank) -->
-            <div id="stage-wordbank" class="stage-container hidden">
-                <h3 style="font-size:1.4rem; font-weight:700; margin-bottom:8px; text-align:left; color:var(--text-main);">Word Bank Quiz</h3>
-                <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:20px; text-align:left;">Click a word in the Word Bank, then click a blank space in any sentence to fill it. Click a filled blank to clear it.</p>
-                
-                <!-- Shared Word Bank -->
-                <div class="wordbank-container-box" style="background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; padding: 15px; margin-bottom: 25px; text-align: left;">
-                    <h4 style="font-size: 0.95rem; font-weight: 600; color: var(--accent-secondary); margin-bottom: 10px; margin-top: 0;">Word Bank</h4>
-                    <div id="wordbank-chips" style="display: flex; flex-wrap: wrap; gap: 8px;">
-                        <!-- Dynamic word chips -->
-                    </div>
-                </div>
-                
-                <div id="wordbank-practice-list" class="worksheet-list" style="max-height: 400px; overflow-y: auto; margin-bottom: 25px; padding-right: 5px; text-align: left;">
-                    <!-- Dynamic Cloze Sentences -->
-                </div>
-                
-                <button id="submit-wordbank-btn" class="btn-primary" style="margin-top: 0; width:100%; padding:16px 0; font-size:1.15rem;">Submit Quiz</button>
-            </div>
-
-            <!-- Hidden capture input for global worksheet keyboard capturing -->
-            <input type="text" id="hidden-typing-input" class="hidden-input-capture" autocomplete="off" spellcheck="false">
         </section>
 
-        <!-- View: Result -->
+        <!-- Section 2: Story Practice Game -->
+        <section id="view-game" class="view">
+            <div class="game-header-row">
+                <button id="exit-game-btn" class="btn-icon-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Menu
+                </button>
+                <h2 id="story-title" class="game-title">Lesson Story</h2>
+            </div>
+
+            <!-- Floating / Shared Word Bank -->
+            <div class="wordbank-section">
+                <div class="wordbank-header">Word Bank</div>
+                <div id="wordbank-chips" class="wordbank-chips-grid"></div>
+            </div>
+
+            <!-- Cohesive Story Text Container -->
+            <div id="story-text-container" class="story-passage"></div>
+
+            <button id="submit-quiz-btn" class="btn-primary" style="width: 100%; padding: 16px 0; font-size: 1.2rem; margin-top: 10px;">Check Answers</button>
+        </section>
+
+        <!-- Section 3: Quiz Score / Results -->
         <section id="view-result" class="view">
-            <h2 class="result-title">Challenge Complete!</h2>
+            <h2 class="result-title">Quest Complete!</h2>
             <div class="score-circle">
                 <span id="final-score-text">0%</span>
             </div>
-            <p class="stats-summary" id="summary-text" style="margin-bottom: 35px; line-height:1.5; color:var(--text-muted); font-size:1rem; font-weight:400;"></p>
+            <p id="summary-text" class="stats-summary"></p>
             
-            <div class="result-controls" style="display: flex; flex-direction: column; gap: 12px; max-width: 400px; margin: 0 auto;">
-                <button id="retry-mistakes-btn" class="btn-primary" style="margin:0; width:100%; padding:14px 0;">Practice Mistakes Again</button>
-                <button id="retry-round-btn" class="btn-outline" style="margin:0; width:100%; padding:14px 0;">Practice This Round Again</button>
-                <button id="next-round-btn" class="btn-outline" style="margin:0; width:100%; padding:14px 0;">Practice Next Round</button>
-                <button id="go-home-btn" class="btn-outline" style="margin:0; width:100%; padding:14px 0; border-color:transparent; background:rgba(255,255,255,0.02);">Back to Main Menu</button>
+            <div class="result-controls">
+                <button id="retry-story-btn" class="btn-primary" style="width: 100%;">Try This Story Again</button>
+                <button id="menu-btn" class="btn-outline" style="width: 100%;">Choose Another Story</button>
             </div>
         </section>
     </main>
+
+    <!-- Feedback Toast -->
+    <div id="feedback-toast" class="toast"></div>
 
     <script src="app.js"></script>
 </body>
