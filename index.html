@@ -85,17 +85,48 @@
                     <span class="lesson-name">Some Games</span>
                 </button>
             </div>
-            
-            <div class="custom-upload-section">
-                <div class="divider"><span>OR</span></div>
-                <div class="upload-row">
-                    <button id="upload-trigger-btn" class="btn-outline">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
-                        Upload Custom CSV
-                    </button>
-                    <input type="file" id="csv-file-input" accept=".csv" hidden>
-                </div>
+            <!-- Superman Mode Toggle -->
+            <div class="superman-mode-container">
+                <span class="superman-label">
+                    ⚡ Superman Mode (No Word Bank)
+                </span>
+                <label class="switch">
+                    <input type="checkbox" id="superman-toggle">
+                    <span class="slider round"></span>
+                </label>
             </div>
+        </section>
+
+        <!-- Section 1.5: Story Preview (Study Mode) -->
+        <section id="view-preview" class="view">
+            <div class="game-header-row">
+                <button id="exit-preview-btn" class="btn-icon-text">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Back to Menu
+                </button>
+                <h2 id="preview-title" class="game-title">Lesson Preview</h2>
+            </div>
+
+            <!-- Difficulty Selector -->
+            <div class="difficulty-container">
+                <button class="difficulty-btn active" data-difficulty="quiz">Quiz</button>
+                <button class="difficulty-btn" data-difficulty="exam">Exam</button>
+            </div>
+
+            <!-- Story Selector -->
+            <div id="story-selector-container" class="story-selector-container hidden">
+                <span class="story-selector-label">Story Quiz:</span>
+                <div id="story-selector-buttons" class="story-selector-buttons"></div>
+            </div>
+            
+            <div class="instruction-text">
+                Read the story carefully and memorize the vocabulary words before starting.
+            </div>
+
+            <!-- Full Story Text with Answers -->
+            <div id="preview-text-container" class="story-passage"></div>
+
+            <button id="start-game-btn" class="btn-primary btn-block">I'm Ready, Start the Test!</button>
         </section>
 
         <!-- Section 2: Story Practice Game -->
@@ -117,7 +148,7 @@
             <!-- Cohesive Story Text Container -->
             <div id="story-text-container" class="story-passage"></div>
 
-            <button id="submit-quiz-btn" class="btn-primary" style="width: 100%; padding: 16px 0; font-size: 1.2rem; margin-top: 10px;">Check Answers</button>
+            <button id="submit-quiz-btn" class="btn-primary btn-block">Check Answers</button>
         </section>
 
         <!-- Section 3: Quiz Score / Results -->
@@ -129,8 +160,8 @@
             <p id="summary-text" class="stats-summary"></p>
             
             <div class="result-controls">
-                <button id="retry-story-btn" class="btn-primary" style="width: 100%;">Try This Story Again</button>
-                <button id="menu-btn" class="btn-outline" style="width: 100%;">Choose Another Story</button>
+                <button id="retry-story-btn" class="btn-primary btn-block" style="margin-top: 0;">Try This Story Again</button>
+                <button id="menu-btn" class="btn-outline btn-block" style="margin-top: 0;">Choose Another Story</button>
             </div>
         </section>
     </main>

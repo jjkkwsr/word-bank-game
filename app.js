@@ -4,9 +4,56 @@ document.addEventListener('DOMContentLoaded', () => {
     let vocabWords = [];
     let correctAnswers = [];
     let currentStoryText = '';
+    let activeDifficulty = 'quiz';
+    let activeStoryIndex = 1;
+    let selectedInput = null;
+
+    const STORIES_METADATA = {
+        "1_a_favourite_toy_shop.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "2_the_party.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "3_at_the_doctors.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "4_uncle_charlies_hotel.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "5_from_the_countryside_to_the_jungle.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "6_the_weather.csv": {
+            "quiz": 2,
+            "exam": 2
+        },
+        "7_our_town.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "8_dreaming_of_holidays.csv": {
+            "quiz": 2,
+            "exam": 2
+        },
+        "9_some_games.csv": {
+            "quiz": 3,
+            "exam": 2
+        },
+        "default": {
+            "quiz": 1,
+            "exam": 1
+        }
+    };
 
     // --- DOM Elements ---
     const viewMenu = document.getElementById('view-menu');
+    const viewPreview = document.getElementById('view-preview');
     const viewGame = document.getElementById('view-game');
     const viewResult = document.getElementById('view-result');
     const appContainer = document.getElementById('app-container');
@@ -15,10 +62,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeMenuBtn = document.getElementById('theme-menu-btn');
     const themeDropdownMenu = document.getElementById('theme-dropdown-menu');
 
-    const csvFileInput = document.getElementById('csv-file-input');
-    const uploadTriggerBtn = document.getElementById('upload-trigger-btn');
+    const supermanToggle = document.getElementById('superman-toggle');
+    
+    const previewTitle = document.getElementById('preview-title');
+    const previewTextContainer = document.getElementById('preview-text-container');
+    const startGameBtn = document.getElementById('start-game-btn');
+    const exitPreviewBtn = document.getElementById('exit-preview-btn');
+
+    const storySelectorContainer = document.getElementById('story-selector-container');
+    const storySelectorButtons = document.getElementById('story-selector-buttons');
+
     const storyTitle = document.getElementById('story-title');
     const storyTextContainer = document.getElementById('story-text-container');
+    const wordbankSection = document.querySelector('.wordbank-section');
     const wordbankChips = document.getElementById('wordbank-chips');
     const submitQuizBtn = document.getElementById('submit-quiz-btn');
     const exitGameBtn = document.getElementById('exit-game-btn');
@@ -27,6 +83,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const summaryText = document.getElementById('summary-text');
     const retryStoryBtn = document.getElementById('retry-story-btn');
     const menuBtn = document.getElementById('menu-btn');
+
+    // --- Helper: Pronounce Word ---
+    function pronounceWord(word) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(word);
+        utterance.lang = 'en-US';
+        utterance.rate = 0.85; // slightly slower for language learners
+        window.speechSynthesis.speak(utterance);
+    }
 
     // --- Helper: Switch Views ---
     function switchView(viewId) {
@@ -64,6 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.addEventListener('click', () => {
         themeDropdownMenu.classList.add('hidden');
+        document.querySelectorAll('.wordbank-chip').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.cloze-input').forEach(inp => inp.classList.remove('selected'));
+        selectedInput = null;
     });
 
     document.querySelectorAll('.theme-dropdown-item').forEach(btn => {
@@ -126,35 +194,105 @@ document.addEventListener('DOMContentLoaded', () => {
         cleanName = cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
         storyTitle.textContent = cleanName;
 
-        const storyFilename = fileName.replace('.csv', '.txt');
+        // Reset difficulty tabs in UI to quiz
+        activeDifficulty = 'quiz';
+        activeStoryIndex = 1;
+        document.querySelectorAll('.difficulty-btn').forEach(btn => {
+            if (btn.dataset.difficulty === 'quiz') {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
 
-        // Check if custom uploaded file, use fallback immediately
-        if (fileName === 'custom_uploaded.csv') {
+        loadStory('quiz', 1);
+    }
+
+    function loadStory(difficulty, storyIndex) {
+        activeDifficulty = difficulty;
+        activeStoryIndex = storyIndex;
+        
+        if (activeFileName === 'custom_uploaded.csv') {
             currentStoryText = getFallbackStory(vocabWords);
-            renderStoryQuiz();
-        } else {
-            // Fetch the human-written story
-            fetch(`story/${storyFilename}`)
-                .then(res => {
-                    if (res.status === 200) {
-                        return res.text();
-                    } else {
-                        return getFallbackStory(vocabWords);
-                    }
-                })
-                .then(text => {
-                    currentStoryText = text;
-                    renderStoryQuiz();
-                })
-                .catch(() => {
-                    currentStoryText = getFallbackStory(vocabWords);
-                    renderStoryQuiz();
-                });
+            renderStoryPreview();
+            return;
         }
+
+        const lessonBase = activeFileName.replace('.csv', '');
+        const storyFilename = `${lessonBase}_${difficulty}_${storyIndex}.txt`;
+
+        fetch(`story/${storyFilename}`)
+            .then(res => {
+                if (res.status === 200) {
+                    return res.text();
+                } else {
+                    // Try original file name if storyIndex 1 (e.g. 2_the_party.txt)
+                    const originalFilename = `${lessonBase}.txt`;
+                    console.log(`Story ${storyFilename} not found, falling back to ${originalFilename}`);
+                    return fetch(`story/${originalFilename}`).then(r => {
+                        if (r.status === 200) {
+                            return r.text();
+                        } else {
+                            return getFallbackStory(vocabWords);
+                        }
+                    });
+                }
+            })
+            .then(text => {
+                currentStoryText = text;
+                renderStoryPreview();
+            })
+            .catch(() => {
+                currentStoryText = getFallbackStory(vocabWords);
+                renderStoryPreview();
+            });
+    }
+
+    // --- Render Story Preview ---
+    function renderStoryPreview() {
+        // Clean lesson title name
+        let cleanName = activeFileName.replace('.csv', '').replace(/^[0-9]+_/, '').replace(/_/g, ' ');
+        cleanName = cleanName.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        previewTitle.textContent = cleanName;
+
+        // Highlight correct answers
+        let previewHtml = currentStoryText.replace(/\[([^\]]+)\]/g, '<span class="preview-highlight">$1</span>');
+
+        // Populate preview container
+        previewTextContainer.innerHTML = previewHtml.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+
+        // Render Story Paging Buttons
+        const metadata = STORIES_METADATA[activeFileName] || STORIES_METADATA['default'];
+        const numStories = metadata[activeDifficulty] || 1;
+
+        storySelectorButtons.innerHTML = '';
+        if (numStories > 1) {
+            storySelectorContainer.classList.remove('hidden');
+            for (let i = 1; i <= numStories; i++) {
+                const btn = document.createElement('button');
+                btn.className = `story-select-btn${i === activeStoryIndex ? ' active' : ''}`;
+                btn.textContent = i;
+                btn.addEventListener('click', () => {
+                    loadStory(activeDifficulty, i);
+                });
+                storySelectorButtons.appendChild(btn);
+            }
+        } else {
+            storySelectorContainer.classList.add('hidden');
+        }
+
+        switchView('preview');
     }
 
     // --- Render Story and Chips ---
     function renderStoryQuiz() {
+        // Check Superman Mode
+        if (supermanToggle.checked) {
+            wordbankSection.classList.add('hidden');
+        } else {
+            wordbankSection.classList.remove('hidden');
+        }
+
         // Render Word Bank Chips
         wordbankChips.innerHTML = '';
         
@@ -174,29 +312,24 @@ document.addEventListener('DOMContentLoaded', () => {
             chip.textContent = word;
             chip.dataset.word = word;
             
-            chip.addEventListener('click', () => {
-                // Focus active input, or find the first empty input
-                let activeInput = document.activeElement;
-                if (!activeInput || !activeInput.classList.contains('cloze-input') || activeInput.disabled) {
-                    const inputs = Array.from(document.querySelectorAll('.cloze-input'));
-                    activeInput = inputs.find(input => input.value === '' && !input.disabled);
+            chip.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent document click listener from deselecting
+                
+                // If there's an active selected input, fill it
+                if (selectedInput && !selectedInput.disabled) {
+                    selectedInput.value = word;
+                    selectedInput.dispatchEvent(new Event('input'));
+                    selectedInput.classList.remove('selected');
+                    selectedInput = null;
+                    return;
                 }
                 
-                if (activeInput) {
-                    activeInput.value = word;
-                    activeInput.focus();
-                    
-                    // Trigger input event to refresh chip used state
-                    activeInput.dispatchEvent(new Event('input'));
-                    
-                    // Autofocus next empty blank space
-                    const inputs = Array.from(document.querySelectorAll('.cloze-input'));
-                    const nextEmpty = inputs.find(input => input.value === '' && !input.disabled);
-                    if (nextEmpty) {
-                        nextEmpty.focus();
-                    } else {
-                        activeInput.blur();
-                    }
+                // Otherwise, toggle active state on this chip
+                const alreadyActive = chip.classList.contains('active');
+                document.querySelectorAll('.wordbank-chip').forEach(c => c.classList.remove('active'));
+                
+                if (!alreadyActive) {
+                    chip.classList.add('active');
                 }
             });
             
@@ -224,6 +357,12 @@ document.addEventListener('DOMContentLoaded', () => {
             
             storyHtml += `<input type="text" class="cloze-input" id="cloze-input-${inputsCount}" data-answer="${answerWord}" placeholder="Fill..." autocomplete="off" spellcheck="false" style="width: ${inputWidth}px;">`;
             
+            if (supermanToggle.checked) {
+                storyHtml += `<button class="pronounce-btn" data-word="${answerWord}" title="Hear pronunciation">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </button>`;
+            }
+            
             inputsCount++;
             lastIdx = bracketsRegex.lastIndex;
         }
@@ -232,10 +371,44 @@ document.addEventListener('DOMContentLoaded', () => {
         // Populate story area
         storyTextContainer.innerHTML = storyHtml.replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
 
-        // Bind input listeners to toggle chip styles dynamically
+        // Bind input listeners to toggle chip styles dynamically and handle click-to-fill
         document.querySelectorAll('.cloze-input').forEach(input => {
             input.addEventListener('input', updateChipStatus);
             input.addEventListener('change', updateChipStatus);
+            
+            input.addEventListener('click', (e) => {
+                e.stopPropagation(); // prevent document click listener from deselecting
+                
+                // Clear any other selected input styles
+                document.querySelectorAll('.cloze-input').forEach(inp => inp.classList.remove('selected'));
+                
+                // Set this input as selected
+                selectedInput = input;
+                input.classList.add('selected');
+                
+                // Find if there is an active chip selected
+                const activeChip = document.querySelector('.wordbank-chip.active');
+                if (activeChip) {
+                    e.preventDefault(); // prevent keyboard popup if mobile/tablet
+                    input.value = activeChip.dataset.word;
+                    input.dispatchEvent(new Event('input'));
+                    activeChip.classList.remove('active');
+                    
+                    // Clear selected input state
+                    input.classList.remove('selected');
+                    selectedInput = null;
+                }
+            });
+        });
+
+        // Bind pronounce buttons
+        document.querySelectorAll('.pronounce-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const word = btn.dataset.word;
+                pronounceWord(word);
+            });
         });
 
         // Initialize state
@@ -306,21 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // --- Custom CSV Upload Handlers ---
-    uploadTriggerBtn.addEventListener('click', () => {
-        csvFileInput.click();
-    });
 
-    csvFileInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        reader.onload = (event) => {
-            initGame('custom_uploaded.csv', event.target.result);
-        };
-        reader.readAsText(file);
-    });
 
     // --- Action Controllers ---
     submitQuizBtn.addEventListener('click', submitQuiz);
@@ -330,10 +489,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     retryStoryBtn.addEventListener('click', () => {
-        renderStoryQuiz();
+        renderStoryPreview();
     });
 
     menuBtn.addEventListener('click', () => {
         switchView('menu');
+    });
+
+    startGameBtn.addEventListener('click', () => {
+        renderStoryQuiz();
+    });
+
+    exitPreviewBtn.addEventListener('click', () => {
+        switchView('menu');
+    });
+
+    // --- Difficulty Selector Controller ---
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const difficulty = btn.dataset.difficulty;
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            loadStory(difficulty, 1);
+        });
     });
 });
