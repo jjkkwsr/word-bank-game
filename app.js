@@ -77,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const wordbankSection = document.querySelector('.wordbank-section');
     const wordbankChips = document.getElementById('wordbank-chips');
     const submitQuizBtn = document.getElementById('submit-quiz-btn');
+    const gameResultsCard = document.getElementById('game-results-card');
     const exitGameBtn = document.getElementById('exit-game-btn');
 
     const finalScoreText = document.getElementById('final-score-text');
@@ -412,6 +413,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Initialize state
+        submitQuizBtn.classList.remove('hidden');
+        if (gameResultsCard) gameResultsCard.classList.add('hidden');
         updateChipStatus();
         switchView('game');
     }
@@ -447,21 +450,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 input.classList.add('correct');
                 input.classList.remove('incorrect');
                 input.disabled = true;
+                input.style.width = Math.max(110, input.value.length * 13 + 24) + 'px';
             } else {
                 input.classList.add('incorrect');
                 input.classList.remove('correct');
                 input.disabled = true;
                 input.value = `${userAns || '(Empty)'} (✗ -> ${input.dataset.answer})`;
+                input.style.width = Math.max(160, input.value.length * 13 + 30) + 'px';
             }
+            input.title = input.value;
         });
 
-        // Switch to result page after review delay
-        setTimeout(() => {
-            switchView('result');
-            const percent = Math.round((score / inputs.length) * 100);
-            finalScoreText.textContent = `${percent}%`;
-            summaryText.innerHTML = `You completed the story filling quest!<br>Correctly filled <strong>${score}</strong> out of <strong>${inputs.length}</strong> blank spaces.`;
-        }, 2500);
+        // Hide Check Answers button and display inline results summary right below the story
+        submitQuizBtn.classList.add('hidden');
+        const percent = Math.round((score / inputs.length) * 100);
+        finalScoreText.textContent = `${percent}%`;
+        summaryText.innerHTML = `You completed the story filling quest!<br>Correctly filled <strong>${score}</strong> out of <strong>${inputs.length}</strong> blank spaces.`;
+        if (gameResultsCard) {
+            gameResultsCard.classList.remove('hidden');
+            gameResultsCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
     }
 
     // --- Click Handlers: Selection Menu ---

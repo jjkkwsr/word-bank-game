@@ -149,19 +149,19 @@
             <div id="story-text-container" class="story-passage"></div>
 
             <button id="submit-quiz-btn" class="btn-primary btn-block">Check Answers</button>
-        </section>
 
-        <!-- Section 3: Quiz Score / Results -->
-        <section id="view-result" class="view">
-            <h2 class="result-title">Quest Complete!</h2>
-            <div class="score-circle">
-                <span id="final-score-text">0%</span>
-            </div>
-            <p id="summary-text" class="stats-summary"></p>
-            
-            <div class="result-controls">
-                <button id="retry-story-btn" class="btn-primary btn-block" style="margin-top: 0;">Try This Story Again</button>
-                <button id="menu-btn" class="btn-outline btn-block" style="margin-top: 0;">Choose Another Story</button>
+            <!-- Inline Results Display after submitting -->
+            <div id="game-results-card" class="game-results-card hidden">
+                <h2 class="result-title">Quest Complete!</h2>
+                <div class="score-circle">
+                    <span id="final-score-text">0%</span>
+                </div>
+                <p id="summary-text" class="stats-summary"></p>
+                
+                <div class="result-controls">
+                    <button id="retry-story-btn" class="btn-primary btn-block" style="margin-top: 0;">Try This Story Again</button>
+                    <button id="menu-btn" class="btn-outline btn-block" style="margin-top: 0;">Choose Another Story</button>
+                </div>
             </div>
         </section>
     </main>
